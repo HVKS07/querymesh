@@ -7,6 +7,13 @@ type User = {
   email: string;
 };
 
+type Order = {
+  id: string;
+  status: string;
+  total: number;
+  userId: string;
+};
+
 const users: User[] = [
   {
     id: "1",
@@ -20,6 +27,21 @@ const users: User[] = [
   }
 ];
 
+const orders: Order[] = [
+  {
+    id: "101",
+    status: "PROCESSING",
+    total: 49.99,
+    userId: "1"
+  },
+  {
+    id: "102",
+    status: "SHIPPED",
+    total: 129.5,
+    userId: "2"
+  }
+];
+
 // The schema describes the GraphQL types and the queries clients can run.
 const typeDefs = `#graphql
   type User {
@@ -28,8 +50,17 @@ const typeDefs = `#graphql
     email: String!
   }
 
+  type Order {
+    id: ID!
+    status: String!
+    total: Float!
+    userId: ID!
+    user: User
+  }
+
   type Query {
     user(id: ID!): User
+    order(id: ID!): Order
   }
 `;
 
@@ -38,6 +69,15 @@ const resolvers = {
   Query: {
     user: (_parent: unknown, args: { id: string }) => {
       return users.find((user) => user.id === args.id) ?? null;
+    },
+    order: (_parent: unknown, args: { id: string }) => {
+      return orders.find((order) => order.id === args.id) ?? null;
+    }
+  },
+  Order: {
+    // This nested resolver runs when a query asks for the user inside an order.
+    user: (parent: Order) => {
+      return users.find((user) => user.id === parent.userId) ?? null;
     }
   }
 };
