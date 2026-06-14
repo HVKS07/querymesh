@@ -1,22 +1,22 @@
-import { orders } from "./data/orders.js";
-import { users } from "./data/users.js";
+import { getOrderById } from "./services/orderService.js";
+import { getUserById } from "./services/userService.js";
 import type { GraphQLContext, Order, OrderItem } from "./types.js";
 
 // Resolvers contain the functions that return data for schema fields.
 export const resolvers = {
   Query: {
     user: (_parent: unknown, args: { id: string }) => {
-      return users.find((user) => user.id === args.id) ?? null;
+      return getUserById(args.id);
     },
     order: (_parent: unknown, args: { id: string }) => {
-      return orders.find((order) => order.id === args.id) ?? null;
+      return getOrderById(args.id);
     }
   },
   Order: {
     // This nested resolver runs when a query asks for the user inside an order.
     user: (parent: Order) => {
       console.log(`Resolving Order.user for userId=${parent.userId}`);
-      return users.find((user) => user.id === parent.userId) ?? null;
+      return getUserById(parent.userId);
     }
   },
   OrderItem: {
