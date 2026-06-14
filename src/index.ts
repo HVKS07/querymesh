@@ -12,6 +12,19 @@ type Order = {
   status: string;
   total: number;
   userId: string;
+  items: OrderItem[];
+};
+
+type OrderItem = {
+  productId: string;
+  quantity: number;
+};
+
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+  inventoryStatus: string;
 };
 
 const users: User[] = [
@@ -27,18 +40,38 @@ const users: User[] = [
   }
 ];
 
+const products: Product[] = [
+  {
+    id: "p1",
+    name: "GraphQL Starter Mug",
+    price: 19.99,
+    inventoryStatus: "IN_STOCK"
+  },
+  {
+    id: "p2",
+    name: "TypeScript Notebook",
+    price: 29.99,
+    inventoryStatus: "LOW_STOCK"
+  }
+];
+
 const orders: Order[] = [
   {
     id: "101",
     status: "PROCESSING",
     total: 49.99,
-    userId: "1"
+    userId: "1",
+    items: [
+      { productId: "p1", quantity: 2 },
+      { productId: "p2", quantity: 1 }
+    ]
   },
   {
     id: "102",
     status: "SHIPPED",
     total: 129.5,
-    userId: "2"
+    userId: "2",
+    items: [{ productId: "p2", quantity: 3 }]
   }
 ];
 
@@ -50,12 +83,27 @@ const typeDefs = `#graphql
     email: String!
   }
 
+  type Product {
+    id: ID!
+    name: String!
+    price: Float!
+    inventoryStatus: String!
+  }
+
+  type OrderItem {
+    productId: ID!
+    quantity: Int!
+    product: Product
+  }
+
   type Order {
     id: ID!
     status: String!
     total: Float!
     userId: ID!
     user: User
+    # Order.items is the list of products and quantities in this order.
+    items: [OrderItem!]!
   }
 
   type Query {
@@ -78,6 +126,13 @@ const resolvers = {
     // This nested resolver runs when a query asks for the user inside an order.
     user: (parent: Order) => {
       return users.find((user) => user.id === parent.userId) ?? null;
+    }
+  },
+  OrderItem: {
+    // This nested resolver finds the full product for an item using productId.
+    // Nested fields let clients ask for connected data in one GraphQL query.
+    product: (parent: OrderItem) => {
+      return products.find((product) => product.id === parent.productId) ?? null;
     }
   }
 };
