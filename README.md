@@ -1,6 +1,6 @@
 # QueryMesh
 
-A minimal TypeScript Node.js GraphQL project using Apollo Server.
+QueryMesh is a TypeScript/Apollo GraphQL gateway that composes data from backend services, demonstrates the N+1 problem, and fixes it with request-scoped DataLoader batching.
 
 ## Getting started
 
