@@ -5,16 +5,22 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "dev": "npm run dev:gateway",
+    "dev:gateway": "tsx watch src/index.ts",
+    "dev:products": "tsx watch services/products-service/src/index.ts",
+    "dev:all": "node scripts/dev-all.cjs",
+    "build": "tsc && tsc -p services/products-service/tsconfig.json",
+    "start": "node dist/index.js",
+    "start:products": "node services/products-service/dist/index.js"
   },
   "dependencies": {
     "@apollo/server": "^5.5.1",
     "dataloader": "^2.2.3",
+    "express": "^5.2.1",
     "graphql": "^16.10.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^22.10.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
