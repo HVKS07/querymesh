@@ -4,3 +4,7 @@ import { orders } from "../data/orders.js";
 export const getOrderById = (id: string) => {
   return orders.find((order) => order.id === id) ?? null;
 };
+
+export const getOrders = () => {
+  return orders;
+};

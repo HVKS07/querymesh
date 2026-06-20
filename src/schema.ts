@@ -32,5 +32,6 @@ export const typeDefs = `#graphql
   type Query {
     user(id: ID!): User
     order(id: ID!): Order
+    orders: [Order!]!
   }
 `;

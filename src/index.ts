@@ -2,6 +2,7 @@ import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 
 import { createProductLoader } from "./loaders/productLoader.js";
+import { createUserLoader } from "./loaders/userLoader.js";
 import { resolvers } from "./resolvers.js";
 import { typeDefs } from "./schema.js";
 import type { GraphQLContext } from "./types.js";
@@ -15,7 +16,8 @@ const { url } = await startStandaloneServer(server, {
   listen: { port: 4000 },
   context: async () => {
     return {
-      productLoader: createProductLoader()
+      productLoader: createProductLoader(),
+      userLoader: createUserLoader()
     };
   }
 });

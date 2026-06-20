@@ -28,4 +28,5 @@ export type Product = {
 
 export type GraphQLContext = {
   productLoader: DataLoader<string, Product | null>;
+  userLoader: DataLoader<string, User | null>;
 };

@@ -4,6 +4,10 @@ type UserResponse = {
   user: User | null;
 };
 
+type UsersResponse = {
+  users: Array<User | null>;
+};
+
 const usersServiceUrl = "http://127.0.0.1:4002";
 
 // The service layer hides where user data comes from.
@@ -31,4 +35,27 @@ export const getUserById = async (id: string) => {
 
   const data = (await response.json()) as UserResponse;
   return data.user;
+};
+
+// Used by userLoader to fetch many users with one HTTP request.
+export const getUsersByIds = async (ids: readonly string[]) => {
+  const idsParam = encodeURIComponent(ids.join(","));
+  console.log(`Gateway fetching users from users-service for ids=${ids.join(",")}`);
+
+  let response: Response;
+
+  try {
+    response = await fetch(`${usersServiceUrl}/users?ids=${idsParam}`);
+  } catch (error) {
+    throw new Error(
+      `Users service is unreachable at ${usersServiceUrl}. Start it with npm run dev:users.`
+    );
+  }
+
+  if (!response.ok) {
+    throw new Error(`Users service request failed with status ${response.status}`);
+  }
+
+  const data = (await response.json()) as UsersResponse;
+  return data.users;
 };

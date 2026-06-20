@@ -1,4 +1,4 @@
-import { getOrderById } from "./services/orderService.js";
+import { getOrderById, getOrders } from "./services/orderService.js";
 import { getUserById } from "./services/userService.js";
 import type { GraphQLContext, Order, OrderItem } from "./types.js";
 
@@ -10,13 +10,16 @@ export const resolvers = {
     },
     order: (_parent: unknown, args: { id: string }) => {
       return getOrderById(args.id);
+    },
+    orders: () => {
+      return getOrders();
     }
   },
   Order: {
     // This nested resolver runs when a query asks for the user inside an order.
-    user: (parent: Order) => {
+    user: (parent: Order, _args: unknown, context: GraphQLContext) => {
       console.log(`Resolving Order.user for userId=${parent.userId}`);
-      return getUserById(parent.userId);
+      return context.userLoader.load(parent.userId);
     }
   },
   OrderItem: {
