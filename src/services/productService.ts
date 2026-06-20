@@ -1,29 +1,22 @@
 import type { Product } from "../types.js";
+import { fetchJson } from "../utils/httpClient.js";
 
 type ProductsResponse = {
   products: Array<Product | null>;
 };
 
-const productsServiceUrl = "http://localhost:4001";
+const productsServiceUrl = "http://127.0.0.1:4001";
 
 // The GraphQL gateway composes data from other services.
 // This service hides the HTTP call to the products-service.
 export const getProductsByIds = async (ids: readonly string[]) => {
-  const idsParam = encodeURIComponent(ids.join(","));
-  let response: Response;
+  const idsParam = ids.map((id) => encodeURIComponent(id)).join(",");
+  const url = `${productsServiceUrl}/products?ids=${idsParam}`;
 
   try {
-    response = await fetch(`${productsServiceUrl}/products?ids=${idsParam}`);
+    const data = await fetchJson<ProductsResponse>(url);
+    return data.products;
   } catch (error) {
-    throw new Error(
-      `Products service is unreachable at ${productsServiceUrl}. Start it with npm run dev:products.`
-    );
+    throw new Error(`products-service request failed: GET ${url}`);
   }
-
-  if (!response.ok) {
-    throw new Error(`Products service request failed with status ${response.status}`);
-  }
-
-  const data = (await response.json()) as ProductsResponse;
-  return data.products;
 };
