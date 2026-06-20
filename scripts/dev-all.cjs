@@ -1,8 +1,9 @@
 const { spawn } = require("node:child_process");
 
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const isWindows = process.platform === "win32";
 
 const processes = [
+  ["users", ["run", "dev:users"]],
   ["products", ["run", "dev:products"]],
   ["gateway", ["run", "dev:gateway"]]
 ];
@@ -10,7 +11,10 @@ const processes = [
 const children = [];
 
 for (const [name, args] of processes) {
-  const child = spawn(npmCommand, args, {
+  const command = isWindows ? "cmd.exe" : "npm";
+  const commandArgs = isWindows ? ["/d", "/s", "/c", "npm.cmd", ...args] : args;
+
+  const child = spawn(command, commandArgs, {
     stdio: "inherit",
     shell: false
   });
